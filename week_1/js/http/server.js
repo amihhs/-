@@ -15,8 +15,23 @@ const server = http.createServer((req, res) => {
         // console.log(body[0] instanceof Buffer)
         body = Buffer.concat(body).toString()  //Buffer.concat(list) => list <Buffer[]> | <Uint8Array[]> 要合并的 Buffer 数组或 Uint8Array 数组。
         console.log('body:' + body)
-        res.writeHead(200, {'Content-Type': 'text/html'})
-        res.end('HHHH')
+        res.writeHead(200, { 'Content-Type': 'text/html' })
+        res.end(`<html><head>
+        <style>
+        body{color:#fff;}
+        #demo{color:blue;}
+        .p.c{color:red;}
+        p{color:green;}
+        p.p{color:yellow!important;}
+        </style>
+        </head>
+        <body>
+        <p class="p c"  id="demo">Please</p>
+        <p class="p c" >Please</p>
+        <input id="demo" type="text" />
+        <p class="p" id="message"></p>
+        </body>
+        </html>`)
     })
 })
 

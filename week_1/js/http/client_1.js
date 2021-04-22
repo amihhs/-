@@ -1,4 +1,5 @@
 const net = require('net')
+const parser = require('../../../week_2/js/parser.js') 
 
 class Request {
     constructor(options) {
@@ -152,6 +153,7 @@ class TrunckedBodyParser {
                 }
                 this.current = this.CHAR_LEN_LINE_END
             } else {
+                // 十六进制，高位先进
                 this.length *= 16
                 this.length += parseInt(char, 16)
             }
@@ -197,6 +199,6 @@ void async function () {
         }
     })
     let res = await req.send()
-    console.log(res)
+    let dom = parser.parseHTML(res.body)
 }()
 
