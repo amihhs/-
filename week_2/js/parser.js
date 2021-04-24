@@ -451,5 +451,6 @@ module.exports.parseHTML = function parseHTML(html) {
     }
     state = state(EOF)
     // console.log(tokenList)
-    console.log(JSON.stringify(stack))
+    // console.log(JSON.stringify(stack))
+    return stack[0]
 }
