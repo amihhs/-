@@ -16,8 +16,8 @@ let syntax = {
     Expression: [['AdditiveExpression']],
     AdditiveExpression: [['MultiplicativeExpression'], ['AdditiveExpression', '+', 'MultiplicativeExpression'], ['AdditiveExpression', '-', 'MultiplicativeExpression']],
     MultiplicativeExpression: [['PrimaryExpression'], ['MultiplicativeExpression', '*', 'PrimaryExpression'], ['MultiplicativeExpression', '/', 'PrimaryExpression']],
-    PrimaryExpression: [['(', 'Expression', ')'], ['Number'], ['Identifier'], ['Literal']],
-    Literal: [['Number'], ['String'], ['Boolean'], ['Null'], ['RegularExpression']]
+    PrimaryExpression: [['(', 'Expression', ')'], ['NumberLiteral'], ['Literal'], ['Identifier']],
+    Literal: [['NumberLiteral'], ['StringLiteral'], ['BooleanLiteral'], ['NullLiteral'], ['RegularExpression']]
 }
 
 let hash = {}
@@ -81,7 +81,7 @@ function parse(source) {
                 type: state.$reduceType,
                 children: children.reverse()
             }
-        }else{
+        } else {
             throw new Error('unexpected token')
         }
     }
@@ -106,39 +106,128 @@ function parse(source) {
 }
 
 let evalutor = {
-    Programe(node){
+    Programe(node) {
         return evalute(node.children[0])
     },
-    StatementList(node){
-        if(node.children.length === 1){
+    StatementList(node) {
+        if (node.children.length === 1) {
             return evalute(node.children[0])
-        }else{
+        } else {
             evalute(node.children[0])
             return evalute(node.children[1])
         }
     },
-    Statement(node){
+    Statement(node) {
         return evalute(node.children[0])
     },
-    VariableDeclaration(node){
+    VariableDeclaration(node) {
         console.log('declare variable ' + node.children[1].name)
     },
-    EOF(){
-        return null
+    ExpressionStatement(node) {
+        return evalute(node.children[0])
+    },
+    Expression(node) {
+        return evalute(node.children[0])
+    },
+    AdditiveExpression(node) {
+        if (node.children.length === 1) {
+            return evalute(node.children[0])
+        } else {
+            // todo
+        }
+    },
+    MultiplicativeExpression(node) {
+        if (node.children.length === 1) {
+            return evalute(node.children[0])
+        } else {
+            // todo
+        }
+    },
+    PrimaryExpression(node) {
+        if (node.children.length === 1) {
+            return evalute(node.children[0])
+        }
+    },
+    Literal(node) {
+        return evalute(node.children[0])
+    },
+    NumberLiteral(node) {
+
+        let str = node.value
+        let l = str.length
+        let val = 0
+        let n = 10
+        if (str.match(/^0b/)) {
+            n = 2
+            l -= 2
+        } else if (str.match(/^0x/)) {
+            n = 16
+            l -= 2
+        } else if (str.match(/^0o/)) {
+            n = 8
+            l -= 2
+        }
+
+
+
+        while (l--) {
+            let c = str.charCodeAt(str.length - l - 1);
+            if (c >= 'a'.charCodeAt(0)) {
+                c = c - 'a'.charCodeAt(0) + 10
+            } else if (c >= 'A'.charCodeAt(0)) {
+                c = c - 'A'.charCodeAt(0) + 10
+            } else if (c >= '0'.charCodeAt(0)) {
+                c = c - '0'.charCodeAt(0)
+            }
+            val = val * n + c
+        }
+        console.log(val)
+        return Number(node.value)
+    },
+    StringLiteral(node) {
+        console.log(node)
+        let i = 1
+        let result = []
+        for (let i = 1; i < node.value.length - 1; i++) {
+            if (node.value[i] === '\\') {
+                ++i
+                let c = node.value[i]
+                let map = {
+                    "\"": "\"",
+                    "\'": "\'",
+                    "\\": "\\",
+                    "0": String.fromCharCode(0x0000),
+                    "b": String.fromCharCode(0x0008),
+                    "f": String.fromCharCode(0x000C),
+                    "n": String.fromCharCode(0x000A),
+                    "r": String.fromCharCode(0x000D),
+                    "t": String.fromCharCode(0x0009),
+                    "v": String.fromCharCode(0x000B),
+                }
+                if (c in map) {
+                    result.push(map[c])
+                }
+            } else {
+                result.push(node.value[i])
+            }
+        }
+        console.log(result)
+        return result.join('')
+
     }
+
+
+
 }
 
-function evalute(node){
-    if(evalutor[node.type]){
+function evalute(node) {
+    if (evalutor[node.type]) {
         return evalutor[node.type](node)
     }
 }
 
 
-let source = `
-    let a;
-    let b;
-`
+let source = `'a\\bbc';`
 
 let node = parse(source)
 

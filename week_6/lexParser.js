@@ -44,7 +44,7 @@ class XRegExp {
     }
 
 }
-module.exports = function* scan(str) {
+ export function* scan(str) {
     let regexp = new XRegExp({
         inputElement: "<whiteSpace>|<lineTerminator>|<comment>|<token>",
         whiteSpace: / /,
@@ -54,11 +54,12 @@ module.exports = function* scan(str) {
         literal: "<numberLiteral>|<stringLiteral>|<booleanLiteral>|<nullLiteral>",
         numberLiteral: /0x[0-9a-fA-F]+|0o[0-7]+|0b[01]+|(?:[1-9][0-9]*|0)(?:\.[0-9]*)?|\.[0-9]+/,
         stringLiteral: /\"(?:[^"\n]|\\[\s\S])*\"|\'(?:[^'\n]|\\[\s\S])*\'/,
+        // objectLiteral: /\{.*\}/,
         booleanLiteral: /true|false/,
         nullLiteral: /null/,
-        keywords: /if|new|for|function|else|let|var|const/,
+        keywords: /if|for|function|else|let|var|const|break|continue|new/,
         identifier: /[a-zA-Z_$][a-zA-Z0-9_$]*/,
-        punctuator: /\+|\-|\*|\/|%|\+\+|\=\=|\=|\-\-|\,|\?|\:|\{|\}|\(|\)|\<|\>|!|;|\./
+        punctuator: /\|\||\&\&|\+|\-|\*|\/|%|\+\+|\=\=|\=|\-\-|\,|\?|\:|\{|\}|\(|\)|\<|\>|!|;|\./
     }, "g", "inputElement")
 
     while (regexp.lastIndex < str.length) {
@@ -98,6 +99,7 @@ module.exports = function* scan(str) {
         } else if (r.keywords) {
             yield {
                 type: r[0],
+                keywords: true
             }
         } else if (r.punctuator) {
             yield {
@@ -114,4 +116,6 @@ module.exports = function* scan(str) {
         type: 'EOF'
     }
 }
+
+// module.exports = scan
 
