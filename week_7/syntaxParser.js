@@ -1,6 +1,6 @@
-// import { scan } from './lexParser.js'
+import { scan } from './lexParser.js'
 // node 执行当前文件
-const scan = require('./lexParser.js')
+// const scan = require('./lexParser.js')
 
 let syntax = {
     Programe: [
@@ -22,21 +22,21 @@ let syntax = {
     FunctionDeclaration: [
         ['function', 'Identifier', '(', ')', '{', 'StatementList', '}']
     ],
+    Block: [
+        ['{', 'StatementList', '}'],
+        ['{', '}']
+    ],
     BreakStatement: [
         ['break', ';']
     ],
     ContinueStatement: [
         ['continue', ';']
     ],
-    Block: [
-        ['{', 'StatementList', '}'],
-        ['{', '}']
+    IfStatement: [
+        ['if', '(', 'Expression', ')', 'Statement']
     ],
     WhileStatement: [
         ['while', '(', 'Expression', ')', 'Statement']
-    ],
-    IfStatement: [
-        ['if', '(', 'Expression', ')', 'Statement']
     ],
     VariableDeclaration: [
         ['var', 'Identifier', ';'],
@@ -64,12 +64,14 @@ let syntax = {
     AdditiveExpression: [
         ['MultiplicativeExpression'],
         ['AdditiveExpression', '+', 'MultiplicativeExpression'],
-        ['AdditiveExpression', '-', 'MultiplicativeExpression']
+        ['AdditiveExpression', '-', 'MultiplicativeExpression'],
+        ['-', 'MultiplicativeExpression'] //负数
     ],
     MultiplicativeExpression: [
         ['LeftHandSideExpression'],
         ['MultiplicativeExpression', '*', 'LeftHandSideExpression'],
-        ['MultiplicativeExpression', '/', 'LeftHandSideExpression']
+        ['MultiplicativeExpression', '/', 'LeftHandSideExpression'],
+        ['MultiplicativeExpression', '%', 'LeftHandSideExpression'],
     ],
     LeftHandSideExpression: [
         ['CallExpression'],
@@ -135,7 +137,6 @@ function closure(state) {
     }
     while (queue.length) {
         let symbol = queue.shift()
-        // console.log(symbol)
         if (syntax[symbol]) {
             for (let rule of syntax[symbol]) {
                 if (!state[rule[0]])
@@ -154,7 +155,6 @@ function closure(state) {
     }
     for (let symbol in state) {
         if (symbol.match(/^\$/)) continue
-        // console.log(state[symbol])
         if (hash[JSON.stringify(state[symbol])])
             state[symbol] = hash[JSON.stringify(state[symbol])]
         else closure(state[symbol])
@@ -169,7 +169,7 @@ let start = {
 }
 closure(start)
 
-function parse(source) {
+export function parse(source) {
 
     let stack = [start]
     let symbolStack = []
@@ -213,7 +213,7 @@ function parse(source) {
 
 
 
-module.exports = parse
+// module.exports = parse
 
 
 
