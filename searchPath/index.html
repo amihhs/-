@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        #box {
+            display: grid;
+            grid-template-columns: repeat(100, 1fr);
+            grid-template-rows: repeat(100, 1fr);
+            width: 700px;
+            height: 700px;
+            background-color: rgb(211, 211, 211);
+        }
+
+        .cell {
+            border: 1px solid #fff;
+            vertical-align: middle;
+            text-align: center;
+            cursor: pointer;
+        }
+    </style>
+    <script src="./index.js"></script>
+</head>
+
+<body>
+
+    <div id="box"></div>
+    <button onclick="save()">save</button>
+    <button onclick="clearAll()">clear all</button>
+    <script>
+        let map = localStorage['map'] ? JSON.parse(localStorage['map']) : new Array(10000).fill(0);
+        console.log(map)
+
+        init();
+
+    </script>
+</body>
+
+</html>
